@@ -1,148 +1,317 @@
-import React from 'react'
-import { useState,useEffect } from 'react'
-import Navbar from './navbar'
-import Footer from './footer'
-import Services from './services'
-import {MdLocationOn,MdEmail,MdPhoneEnabled} from 'react-icons/md'
-import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import axios from "axios"
 import {
-    Box,
-    IconButton,
-    useBreakpointValue,
-    Stack,
-    Heading,
-    Text,
-    Container,
-    Flex,
-    Image,Card,CardBody,Divider,Spinner
-  } from '@chakra-ui/react';
-  // Here we have used react-icons package for the icons
-  // And react-slick as our Carousel Lib
-import Slider from 'react-slick';
-import { useParams,useNavigate } from 'react-router-dom'
-import axios from 'axios'
+  Box,
+  Container,
+  Stack,
+  Heading,
+  Text,
+  Flex,
+  Image,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  SimpleGrid,
+  HStack,
+  VStack,
+  Icon,
+  Badge,
+  useColorModeValue,
+  Grid,
+  GridItem,
+  Button,
+  Center,
+  Skeleton,
+} from "@chakra-ui/react"
+import { MdLocationOn, MdEmail, MdPhoneEnabled, MdVerified } from "react-icons/md"
+import Navbar from "./navbar"
+import Footer from "./footer"
+import Services from "./services"
 
-const settings = {
-    dots: true,
-    arrows: false,
-    fade: true,
-    infinite: true,
-    autoplay: true,
-    speed: 400,
-    autoplaySpeed: 5000,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
+const ServiceProvider = () => {
+  const navigate = useNavigate()
+  const [spData, setSpData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { id } = useParams()
 
-const Service_provider = () => {
-    const [slider, setSlider] = React.useState(null);
- 
-    // These are the breakpoints which changes the position of the
-    // buttons as the screen size changes
-    const top = useBreakpointValue({ base: '90%', md: '50%' });
-    const side = useBreakpointValue({ base: '30%', md: '40px' });
-  
-    // This list contains all the data for carousels
-    // This can be static or loaded from a server
-    // const cards = [
-    //   {
-        
-    //     image:
-    //       'https://images.unsplash.com/photo-1516796181074-bf453fbfa3e6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDV8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=900&q=60',
-    //   },
-    //   {
-        
-    //     image:
-    //       'https://images.unsplash.com/photo-1438183972690-6d4658e3290e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2274&q=80',
-    //   },
-    //   {
-       
-    //     image:
-    //       'https://images.unsplash.com/photo-1507237998874-b4d52d1dd655?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1yZWxhdGVkfDR8fHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=900&q=60',
-    //   },
-    // ];
+  // Color mode values
+  const cardBg = useColorModeValue("white", "gray.800")
+  const borderColor = useColorModeValue("gray.200", "gray.700")
+  const headingColor = useColorModeValue("gray.800", "white")
+  const textColor = useColorModeValue("gray.600", "gray.300")
+  const accentColor = useColorModeValue("blue.600", "blue.300")
 
+  const getServices = async () => {
+    setIsLoading(true)
+    try {
+      const res = await axios.get(`/api/user/get_sp/${id}`)
+      setSpData(res.data.data)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
+  useEffect(() => {
+    getServices()
+  }, [id])
 
-    const navigate=useNavigate();
-    const [sp_Data,setSp_data]=useState(null)
-    const {id}=useParams()
-    const GetServices=async()=>{
-        await axios.get(`/api/user/get_sp/${id}`)
-        .then(res=>{
-           setSp_data(res.data.data) 
-        })
-        .catch(err=>{
-          console.log(err)
-        })
-      }
-   
-    useEffect(()=>{
-      GetServices()
-   },[])
-    return (
-      <>
-    {sp_Data!=null?
-    <Box w={{base:"140%",sm:"140%",md:"100%",lg:"100%"}} >
-     <Navbar/>
-      <Stack mt={6} direction={'row'} spacing={10} align={'center'} 
-      my='4'  w='fit-content' px={'10'}>
-          
-          <Image src={sp_Data!=null?'data:image/jpg;base64,'+sp_Data.B_pimage.data:"no image"}
-           maxW={'100px'}
-           maxH='20vh'
-           />
-           <Stack direction={'column'}>
-           <Heading size={'lg'}>{sp_Data.B_name}</Heading>
-           <Text display={'inline-flex'} fontWeight='500' 
-           color="gray.700"> <MdLocationOn />{sp_Data.B_address}</Text>
-           <Text display={'inline-flex'} fontWeight='500'  
-           color="gray.700"> <MdEmail/>{sp_Data.B_contact_email}</Text>
-           <Text display={'inline-flex'} fontWeight='500' 
-           color="gray.700"> <MdPhoneEnabled/>{sp_Data.B_contact_no}</Text>
-           <Text color={"blue.600"}>{sp_Data.service_cat}</Text>
-           </Stack>
-        </Stack>
-              {/* This is the block you need to change, to customize the caption */}
-             
-        <Divider/>
-        <Text fontSize='2xl' fontWeight='bold'
-        mx="5" my='8'>Services</Text>
-        <Services />
-        <Divider/>
-        <Text fontSize='2xl' fontWeight='bold'
-        mx="5" my='8'>Branch Images</Text>
-        <Stack mx='5'>
-          <Stack  p='10px' mx='5px'
-          borderColor={'gray.500'} direction='row'>
-              {sp_Data.B_Images.map((image)=>{
-                  return <Image src={'data:image/jpg;base64,'+image.data} w='2xs' h='2xs'/>
-              })}
-          </Stack>
-        </Stack>
-        <Divider/>
-        <Text fontSize='2xl' fontWeight='bold'
-        mx="5" my='8'>Service Description</Text>
-      <Text size='lg' fontWeight={'semibold'}
-      color="gray.600" mx={'5'}>{sp_Data.service_desc}</Text>
-        <Footer/>
-      </Box>:
-      <>
-      <Box w='100%'>
-      <Navbar/>
-      <Spinner
-    thickness='4px'
-    speed='0.65s'
-    emptyColor='gray.200'
-    color='blue.500'
-    size='xl'
-      />
-  <Footer/>
-</Box>
-</>}
-      </>
+  // Main layout wrapper with fixed width and centered content
+  const MainLayout = ({ children }) => (
+    <Box width="100%" maxWidth="100vw" mx="auto" overflow="hidden">
+      <Navbar />
+      {children}
+      <Footer />
+    </Box>
   )
 
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <Container maxW="container.xl" py={10} px={{ base: 4, md: 6 }} centerContent>
+          <Box width="100%">
+            <Stack spacing={8}>
+              <HStack spacing={6} align="flex-start">
+                <Skeleton height="100px" width="100px" borderRadius="md" />
+                <VStack align="start" spacing={3} flex={1}>
+                  <Skeleton height="30px" width="200px" />
+                  <Skeleton height="20px" width="300px" />
+                  <Skeleton height="20px" width="250px" />
+                  <Skeleton height="20px" width="200px" />
+                </VStack>
+              </HStack>
+
+              <Divider />
+
+              <Box>
+                <Skeleton height="30px" width="150px" mb={4} />
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} height="200px" borderRadius="lg" />
+                  ))}
+                </SimpleGrid>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Skeleton height="30px" width="200px" mb={4} />
+                <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4}>
+                  {[1, 2, 3, 4].map((i) => (
+                    <Skeleton key={i} height="150px" borderRadius="md" />
+                  ))}
+                </SimpleGrid>
+              </Box>
+
+              <Divider />
+
+              <Box>
+                <Skeleton height="30px" width="250px" mb={4} />
+                <Skeleton height="100px" />
+              </Box>
+            </Stack>
+          </Box>
+        </Container>
+      </MainLayout>
+    )
+  }
+
+  if (!spData) {
+    return (
+      <MainLayout>
+        <Center minH="50vh" flexDirection="column">
+          <Heading size="md" mb={4} color="gray.500">
+            Service provider information not available
+          </Heading>
+          <Button colorScheme="blue" onClick={() => navigate(-1)}>
+            Go Back
+          </Button>
+        </Center>
+      </MainLayout>
+    )
+  }
+
+  return (
+    <MainLayout>
+      <Box width="100%">
+        <Container maxW="container.xl" py={8} px={{ base: 4, md: 6 }}>
+          {/* Business Information Section */}
+          <Card
+            mb={10}
+            boxShadow="md"
+            borderRadius="lg"
+            overflow="hidden"
+            bg={cardBg}
+            borderWidth="1px"
+            borderColor={borderColor}
+            width="100%"
+          >
+            <CardHeader bg="gray.50" py={4}>
+              <Heading size="lg" color={headingColor}>
+                Business Profile
+              </Heading>
+            </CardHeader>
+
+            <CardBody>
+              <Flex
+                direction={{ base: "column", md: "row" }}
+                align={{ base: "center", md: "flex-start" }}
+                gap={6}
+                width="100%"
+              >
+                <Box
+                  borderWidth="1px"
+                  borderRadius="md"
+                  p={2}
+                  borderColor={borderColor}
+                  alignSelf={{ base: "center", md: "flex-start" }}
+                >
+                  <Image
+                    src={
+                      spData ? "data:image/jpg;base64," + spData.B_pimage.data : "/placeholder.svg?height=100&width=100"
+                    }
+                    alt={spData.B_name}
+                    maxW="120px"
+                    maxH="120px"
+                    objectFit="cover"
+                    borderRadius="md"
+                  />
+                </Box>
+
+                <VStack align="flex-start" spacing={3} flex={1} width="100%">
+                  <HStack>
+                    <Heading size="lg" color={headingColor}>
+                      {spData.B_name}
+                    </Heading>
+                    <Icon as={MdVerified} color="blue.500" />
+                  </HStack>
+
+                  <Badge colorScheme="blue" fontSize="sm" px={2} py={1} borderRadius="full">
+                    {spData.service_cat}
+                  </Badge>
+
+                  <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={3} width="100%">
+                    <GridItem>
+                      <HStack spacing={2}>
+                        <Icon as={MdLocationOn} color={accentColor} boxSize={5} />
+                        <Text fontWeight="medium" color={textColor}>
+                          {spData.B_address}
+                        </Text>
+                      </HStack>
+                    </GridItem>
+
+                    <GridItem>
+                      <HStack spacing={2}>
+                        <Icon as={MdEmail} color={accentColor} boxSize={5} />
+                        <Text fontWeight="medium" color={textColor}>
+                          {spData.B_contact_email}
+                        </Text>
+                      </HStack>
+                    </GridItem>
+
+                    <GridItem>
+                      <HStack spacing={2}>
+                        <Icon as={MdPhoneEnabled} color={accentColor} boxSize={5} />
+                        <Text fontWeight="medium" color={textColor}>
+                          {spData.B_contact_no}
+                        </Text>
+                      </HStack>
+                    </GridItem>
+                  </Grid>
+                </VStack>
+              </Flex>
+            </CardBody>
+          </Card>
+
+          {/* Services Section */}
+          <Box mb={10} width="100%">
+            <Heading
+              size="lg"
+              mb={6}
+              pb={2}
+              borderBottomWidth="2px"
+              borderBottomColor={accentColor}
+              color={headingColor}
+            >
+              Our Services
+            </Heading>
+            <Box width="100%">
+              <Services />
+            </Box>
+          </Box>
+
+          {/* Branch Images Section */}
+          <Box mb={10} width="100%">
+            <Heading
+              size="lg"
+              mb={6}
+              pb={2}
+              borderBottomWidth="2px"
+              borderBottomColor={accentColor}
+              color={headingColor}
+            >
+              Branch Gallery
+            </Heading>
+
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+              {spData.B_Images.map((image, index) => (
+                <Box
+                  key={index}
+                  borderRadius="lg"
+                  overflow="hidden"
+                  borderWidth="1px"
+                  borderColor={borderColor}
+                  transition="all 0.3s"
+                  _hover={{ transform: "scale(1.02)", boxShadow: "lg" }}
+                >
+                  <Image
+                    src={"data:image/jpg;base64," + image.data}
+                    alt={`Branch image ${index + 1}`}
+                    width="100%"
+                    height="200px"
+                    objectFit="cover"
+                  />
+                </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+
+          {/* Service Description Section */}
+          <Box mb={10} width="100%">
+            <Heading
+              size="lg"
+              mb={6}
+              pb={2}
+              borderBottomWidth="2px"
+              borderBottomColor={accentColor}
+              color={headingColor}
+            >
+              About Our Services
+            </Heading>
+
+            <Card
+              p={6}
+              boxShadow="sm"
+              borderRadius="lg"
+              bg={cardBg}
+              borderWidth="1px"
+              borderColor={borderColor}
+              width="100%"
+            >
+              <Text fontSize="lg" fontWeight="medium" color={textColor} lineHeight="tall">
+                {spData.service_desc}
+              </Text>
+            </Card>
+          </Box>
+        </Container>
+      </Box>
+    </MainLayout>
+  )
 }
 
-export default Service_provider
+export default ServiceProvider

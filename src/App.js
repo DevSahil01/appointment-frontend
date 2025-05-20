@@ -22,6 +22,8 @@ import Dashboard from './components/Dashboard';
 import SpLogin from './components/spLogin';
 import Activities from './components/activities';
 import Register from './components/registration';
+import CategoryDetails from './components/User_Components/categoryShow';
+import MarkHoliday from './components/addholiday';
 
 function App() {
   
@@ -47,10 +49,12 @@ function App() {
         {/*<--------- User Routes ------->*/}
         <Route path='/' element={<Home/>}/>
         <Route path='/register' element={<UserRegister/>}/>
+        <Route path='/addHoliday' element={<MarkHoliday/>}/>
         <Route path='/signIn' element={<Login/>}/>
         <Route path='/serviceProvider/:id' element={<Service_provider/>}/>
         <Route path='/appointment/:id' element={<Appointment/>}/>
         <Route path='/myappointments' element={<User_Appointments/>}/>
+        <Route path='/category/:category' element={<CategoryDetails/>}/>
        </Routes>
       </ChakraProvider>
       </BrowserRouter>

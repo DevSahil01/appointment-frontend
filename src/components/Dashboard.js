@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState,useEffect } from 'react'
-import { Text,Box, Stack ,Heading
+import { Text,Box, Stack ,Heading,Button
 ,Table,TableContainer,Th,Td,Thead,Tbody,Tr,
 Link,
 Wrap} from '@chakra-ui/react'
@@ -138,6 +138,11 @@ const Dashboard = () => {
           </Stack>
 
       <Stack>
+          <Button type='submit' bg='teal' w={'25%'} color='white' my='10'
+          onClick={()=> navigate('/addHoliday')}
+          
+          >Add Holiday</Button>
+        
         <Heading size={'lg'} color="cyan.800"
         mx='4'>Service Report</Heading>
         <TableContainer w='95%'>
